@@ -3,7 +3,7 @@ terraform {
     azurerm = {
       source = "hashicorp/azurerm"
       configuration_aliases = [
-        azurerm.prov
+        azurerm.sub
       ]
     }
   }
