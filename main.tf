@@ -1,10 +1,12 @@
 resource "azurerm_user_assigned_identity" "tf" {
+  provider            = azurerm.sub
   name                = "appservice-identity"
   location            = var.location
   resource_group_name = var.resource_group_name
 }
 
 resource "azurerm_app_service_plan" "app_service_plan" {
+  provider            = azurerm.sub
   name                = "${var.name}-asp"
   location            = var.location
   resource_group_name = var.resource_group_name
@@ -19,6 +21,7 @@ resource "azurerm_app_service_plan" "app_service_plan" {
 }
 
 resource "azurerm_app_service" "webapp_service" {
+  provider            = azurerm.sub
   name                = var.name
   location            = var.location
   resource_group_name = var.resource_group_name
@@ -48,6 +51,7 @@ resource "azurerm_app_service" "webapp_service" {
 }
 
 resource "azurerm_app_service_slot" "webapp_service_slot_inactive" {
+  provider            = azurerm.sub
   name                = "Inactive"
   location            = var.location
   app_service_name    = azurerm_app_service.webapp_service.name
@@ -77,11 +81,13 @@ resource "azurerm_app_service_slot" "webapp_service_slot_inactive" {
 }
 
 resource "azurerm_app_service_virtual_network_swift_connection" "webapp_vnet_integration" {
+  provider            = azurerm.sub
   app_service_id = azurerm_app_service.webapp_service.id
   subnet_id      = var.subnet_id
 }
 
 resource "azurerm_app_service_slot_virtual_network_swift_connection" "webapp_inactive_slot_vnet_integration" {
+  provider            = azurerm.sub
   slot_name      = azurerm_app_service_slot.webapp_service_slot_inactive.name
   app_service_id = azurerm_app_service.webapp_service.id
   subnet_id      = var.subnet_id
@@ -103,6 +109,7 @@ data "azurerm_key_vault_certificate" "kvcert" {
 
 //Get Certificate from External KeyVault
 resource "azurerm_app_service_certificate" "cert" {
+  provider            = azurerm.sub
   name                = var.certificate_name
   resource_group_name = var.resource_group_name
   location            = var.location
@@ -110,6 +117,7 @@ resource "azurerm_app_service_certificate" "cert" {
 }
 
 resource "azurerm_app_service_custom_hostname_binding" "domain" {
+  provider            = azurerm.sub
   depends_on = [ azurerm_app_service_certificate.cert ]
   hostname = var.custom_domain
   app_service_name = azurerm_app_service.webapp_service.name
@@ -123,10 +131,12 @@ resource "azurerm_app_service_custom_hostname_binding" "domain" {
 }
 
 resource "azurerm_app_service_managed_certificate" "tf" {
+  provider            = azurerm.sub
   custom_hostname_binding_id = azurerm_app_service_custom_hostname_binding.domain.id
 }
 
 resource "azurerm_app_service_certificate_binding" "example" {
+  provider            = azurerm.sub
   hostname_binding_id = azurerm_app_service_custom_hostname_binding.domain.id
   certificate_id      = azurerm_app_service_managed_certificate.tf.id
   ssl_state           = "SniEnabled"
