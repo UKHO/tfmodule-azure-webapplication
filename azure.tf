@@ -4,6 +4,7 @@ terraform {
       source = "hashicorp/azurerm"
       configuration_aliases = [
         azurerm.sub
+        azurerm.ssl
       ]
     }
   }
